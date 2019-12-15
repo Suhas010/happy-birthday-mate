@@ -7,10 +7,9 @@ def main():
     Lists the user's Gmail labels.
     """
     g = Gmail()
-    m = Message()
     service =  g.getService()
-    
-    m.send_message(service, "me", m.create_message("dsuhas4u@gmail.com", "Hey There", "Hello"))
+    m = Message()
+    # m.send_message(service, "me", m.create_message("dsuhas4u@gmail.com", "Hey There", "Hello"))
     # Call the Gmail API
     results = service.users().labels().list(userId='me').execute()
     labels = results.get('labels', [])
@@ -20,7 +19,17 @@ def main():
     else:
         print('Labels:')
         for label in labels:
-            print(label['name'])
+            if label["name"] == "Happy Birthday":
+                ne = []
+                ne.append(label["id"])
+                res = m.ListMessagesWithLabels(service, "me", ne)
+                for r in res:
+                    mes = m.GetMessage(service, r["id"])
+                    ar = mes["payload"]["headers"]
+                    for head in ar:
+                        if head["name"] == "Subject":
+                            print(head["value"])
 
+                            
 if __name__ == '__main__':
     main()

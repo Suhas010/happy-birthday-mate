@@ -1,6 +1,8 @@
 from email.mime.text import MIMEText
 from config import config
 import base64
+from apiclient import errors
+
 class Message:
     def create_message(self, to, subject, message_text):
         """Create a message for an email.
@@ -37,3 +39,32 @@ class Message:
             return message
         except 'error':
             print ('An error occurred:')
+
+    def ListMessagesWithLabels(self, service, user_id="me", label_ids=[]):
+        """List all Messages of the user's mailbox with label_ids applied."""
+        try:
+            response = service.users().messages().list(userId=user_id,
+                                                    labelIds=label_ids).execute()
+            print(response)
+            messages = []
+            if 'messages' in response:
+                messages.extend(response['messages'])
+
+                while 'nextPageToken' in response:
+                    page_token = response['nextPageToken']
+                    response = service.users().messages().list(userId=user_id,
+                                                            labelIds=label_ids,
+                                                            pageToken=page_token).execute()
+                messages.extend(response['messages'])
+
+                return messages
+        except errors.HttpError, error:
+            print ('An error occurred: %s' % error)
+
+    def GetMessage(self, service, msg_id):
+        """ Get """
+        try:
+            message = service.users().messages().get(userId="me", id=msg_id).execute()
+            return message
+        except errors.HttpError, error:
+            print 'An error occurred: %s' % error
