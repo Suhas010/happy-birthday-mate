@@ -1,35 +1,28 @@
 from __future__ import print_function
 from gmail.gmail import Gmail
-from message.message import Message
+from gcontact.gcontact import GContact
+from config import config
+
 
 def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
-    g = Gmail()
-    service =  g.getService()
-    m = Message()
-    # m.send_message(service, "me", m.create_message("dsuhas4u@gmail.com", "Hey There", "Hello"))
-    # Call the Gmail API
+    # initialise gmail service with proper credintials
+    gml = Gmail()
+    service = gml.getService()
+    contact = GContact()
+    # contact = 
+    
+    # get all gmail labels
     results = service.users().labels().list(userId='me').execute()
     labels = results.get('labels', [])
-
+    
+    # if no labels found return
     if not labels:
-        print('No labels found.')
-    else:
-        print('Labels:')
-        for label in labels:
-            if label["name"] == "Happy Birthday":
-                ne = []
-                ne.append(label["id"])
-                res = m.ListMessagesWithLabels(service, "me", ne)
-                for r in res:
-                    mes = m.GetMessage(service, r["id"])
-                    ar = mes["payload"]["headers"]
-                    for head in ar:
-                        if head["name"] == "Subject":
-                            print(head["value"])
-
-                            
+        return
+    
+    # get exact lable
+    label = gml.getLables(labels, config.BIRTHDAY_LABEL);
+    unreadEmail, ids = gml.getTodaysColleagueNames(service, label)
+    print (unreadEmail, ids)
+                 
 if __name__ == '__main__':
     main()

@@ -1,12 +1,15 @@
 import os.path
 import pickle
+import json
+from DateTime import DateTime
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from message.message import Message
 from config import config
 class Gmail:
     def __init__(self):
-        print "suhas"
+        print "Initialising Gmail Service"
     def getService(self):
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
@@ -28,3 +31,23 @@ class Gmail:
                 pickle.dump(creds, token)
 
         return build('gmail', 'v1', credentials=creds)
+    
+    def getLables(self, labels, name):
+        for label in labels:
+            if label["name"] == name:
+                return label
+    
+    def getTodaysColleagueNames(self, service, label):
+        arrayOfEmail, emails, ids, msg, i = [], {}, [], Message(), 0
+        ids.append(label["id"])
+        allMessages = msg.ListMessagesWithLabels(service, "me", ids)
+        for m in allMessages:
+            mail = msg.GetMessage(service, m["id"])
+            headers = mail["payload"]["headers"]
+            for header in headers:
+                if(header["name"] == "Date"):
+                    emails["Date"] = header["value"]
+                if(header["name"] == "Subject"):
+                    emails["Subject"] = header["value"]
+            arrayOfEmail.append(emails)
+        return arrayOfEmail, allMessages;

@@ -43,9 +43,7 @@ class Message:
     def ListMessagesWithLabels(self, service, user_id="me", label_ids=[]):
         """List all Messages of the user's mailbox with label_ids applied."""
         try:
-            response = service.users().messages().list(userId=user_id,
-                                                    labelIds=label_ids).execute()
-            print(response)
+            response = service.users().messages().list(userId=user_id, labelIds=label_ids, q="is:unread").execute()
             messages = []
             if 'messages' in response:
                 messages.extend(response['messages'])
@@ -65,6 +63,18 @@ class Message:
         """ Get """
         try:
             message = service.users().messages().get(userId="me", id=msg_id).execute()
+            return message
+        except errors.HttpError, error:
+            print 'An error occurred: %s' % error
+
+    def RemoveFromLabel(self, service, msg_id, msg_labels):
+        try:
+            message = service.users().messages().modify(userId="me", id=msg_id,
+                                                        body=msg_labels).execute()
+
+            label_ids = message['labelIds']
+
+            print 'Message ID: %s - With Label IDs %s' % (msg_id, label_ids)
             return message
         except errors.HttpError, error:
             print 'An error occurred: %s' % error
