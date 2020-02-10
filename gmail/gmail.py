@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from message.message import Message
 from config import config
+
 class Gmail:
     def __init__(self):
         print "Initialising Gmail Service"

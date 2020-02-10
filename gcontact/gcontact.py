@@ -27,5 +27,5 @@ class GContact:
     self.people_service = build(serviceName='people', version='v1', http=http)
     # Get name and emails from people service
   def getAllContacts(self):
-    return self.people_service.people().connections().list(resourceName='people/me', personFields='names,emailAddresses').execute()
+    return self.people_service.people().connections().list(resourceName='people/me', personFields='names,emailAddresses', pageSize=1000).execute()
     
