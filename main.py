@@ -8,7 +8,7 @@ def main():
     # initialise gmail service with proper credintials
     gml = Gmail()
     service = gml.getService()
-    contact = GContact()
+    gcService = GContact()
     # contact = 
     
     # get all gmail labels
@@ -23,6 +23,7 @@ def main():
     label = gml.getLables(labels, config.BIRTHDAY_LABEL);
     unreadEmail, ids = gml.getTodaysColleagueNames(service, label)
     print (unreadEmail, ids)
+    print(gcService.getAllContacts())
                  
 if __name__ == '__main__':
     main()
