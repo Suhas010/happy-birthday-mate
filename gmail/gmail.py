@@ -11,6 +11,7 @@ from config import config
 class Gmail:
     def __init__(self):
         print "Initialising Gmail Service"
+        
     def getService(self):
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
@@ -42,6 +43,8 @@ class Gmail:
         arrayOfEmail, emails, ids, msg, i = [], {}, [], Message(), 0
         ids.append(label["id"])
         allMessages = msg.ListMessagesWithLabels(service, "me", ids)
+        if not allMessages:
+            return False, False
         for m in allMessages:
             mail = msg.GetMessage(service, m["id"])
             headers = mail["payload"]["headers"]

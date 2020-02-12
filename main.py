@@ -13,13 +13,16 @@ class Main:
         self.labels = self.results.get('labels', [])
         self.hlp = Helper()
 
-
     def sendEmails(self, filterLabel):
         label = self.gml.getLables(self.labels, filterLabel);
         unreadEmails, ids = self.gml.getTodaysColleagueNames(self.service, label)
+        
+        if not unreadEmails:
+            return
         birthday, anniversary = self.hlp.getAllNamesFromHeaders(unreadEmails)
         allContacts = self.gcService.getAllContacts()
         self.hlp.sendEmailsToAll(self.service, birthday, anniversary, allContacts)
+        self.hlp.markEmailAsRead(self.service, ids)
 
 def main():
       
