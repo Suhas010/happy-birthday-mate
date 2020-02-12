@@ -4,41 +4,31 @@ import base64
 from apiclient import errors
 
 class Message:
-    def create_message(self, to, subject, message_text):
-        """Create a message for an email.
-
-        Args:
-            from: Email address of the sender.
-            to: Email address of the receiver.
-            subject: The subject of the email message.
-            message_text: The text of the email message.
-
-        Returns:
-            An object containing a base64url encoded email object.
-        """
+    def create_message(self, sender, to, subject, message_text):
         message = MIMEText(message_text)
-        message['to'] = config.TO
-        message['from'] = config.SENDER
+        message['to'] = to
+        message['from'] = sender
         message['subject'] = subject
         return {'raw': base64.urlsafe_b64encode(message.as_string())}
     
-    def send_message(self, service, user_id, message):
-        """Send an email message.
-
-        Args:
-            service: Authorized Gmail API service instance.
-            user_id: User's email address.
-            message: Message to be sent.
-
-        Returns:
-            Sent Message.
-        """
+    def send_message(self, service, message):
         try:
-            message = (service.users().messages().send(userId=user_id, body=message).execute())
+            message = (service.users().messages().send(userId="me", body=message).execute())
             print ('Message Id: %s' % message['id'])
             return message
         except 'error':
             print ('An error occurred:')
+    
+    def ModifyMessage(self, service, user_id, msg_id):
+        try:
+            message = service.users().messages().modify(userId=user_id, id=msg_id,
+                                                        body={"removeLabelIds": ["UNREAD"]}).execute()
+
+            label_ids = message['labelIds']
+
+            return message
+        except errors.HttpError, error:
+            print('An error occurred: %s' % error)
 
     def ListMessagesWithLabels(self, service, user_id="me", label_ids=[]):
         """List all Messages of the user's mailbox with label_ids applied."""
