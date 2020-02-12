@@ -2,6 +2,10 @@ from config import config
 from message.message import Message
 
 class Helper:
+
+  def __init__(self):
+    self.msg = Message()
+
   
   def getExactName(self, person):
     if person.startswith(config.WORK_ANNIVERSARY_LABEL_HEADER):
@@ -32,22 +36,24 @@ class Helper:
 
   """ Return array of person having birthday and having there work anniversary """
   def getAllNamesFromHeaders(self, arr):
+    print(arr)
     for item in arr:
       birthdayMates, workAnniversaryMates = self.getNamesFromSubject(item["Subject"])
     return birthdayMates, workAnniversaryMates;
 
   def sendBirthdayMails(self, service, mates):
-    msg = Message()
     for mate in mates:
-      message = msg.create_message(config.SENDER, config.BIRTHDAY_SUBJECT_LINE % (mate["name"].title()), config.BIRTHDAY_MESSAGE % (mate["name"].title()))
-      msg.send_message(service, config.SENDER, message)
-  
+      toMySelf = self.msg.create_message(config.SENDER, config.SENDER, "!!!Sent Birthday Mail to %s" % (mate["name"].title()), "")
+      message = self.msg.create_message(config.SENDER, mate["email"], config.BIRTHDAY_SUBJECT_LINE % (mate["name"].title()), "")
+      self.msg.send_message(service, message)
+      self.msg.send_message(service, toMySelf)
   
   def sendAnniversaryEmails(self, service, mates):
-    msg = Message()
     for mate in mates:
-      message = msg.create_message(config.SENDER, config.WORK_ANNIVERSARY_SUBJECT_LINE % (mate["name"].title()), config.WORK_ANNIVERSARY_MESSAGE % (mate["name"].title()))
-      msg.send_message(service, config.SENDER, message)
+      toMySelf = self.msg.create_message(config.SENDER, config.SENDER, "!!!Sent Work Anniversary Mail to %s" % (mate["name"].title()), "")
+      message = self.msg.create_message(config.SENDER, mate["email"], config.WORK_ANNIVERSARY_SUBJECT_LINE % (mate["name"].title()), "")
+      self.msg.send_message(service, toMySelf)
+      self.msg.send_message(service, message)
   
   def plain(self, str):
     str = str.encode("utf-8")
@@ -66,10 +72,15 @@ class Helper:
     return mates
     
   def sendEmailsToAll(self, service, birthdayMates, anniversaryMates, allPeoples):
-    print(len(allPeoples["connections"]))
     if len(birthdayMates):
-      emails = self.findEmailInAllPeoples(birthdayMates, allPeoples)
-      self.sendBirthdayMails(service, emails)
+      allMates = self.findEmailInAllPeoples(birthdayMates, allPeoples)
+      self.sendBirthdayMails(service, allMates)
     if len(anniversaryMates):
-      emails = self.findEmailInAllPeoples(anniversaryMates, allPeoples)
-      self.sendAnniversaryEmails(service, emails)
+      allMates = self.findEmailInAllPeoples(anniversaryMates, allPeoples)
+      self.sendAnniversaryEmails(service, allMates)
+  
+  def markEmailAsRead(self, service, ids):
+    if not ids:
+      return
+    for id in ids:
+      self.msg.ModifyMessage(service, "me", id["id"].encode("utf-8"))
