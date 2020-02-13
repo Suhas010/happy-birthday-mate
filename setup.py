@@ -97,6 +97,6 @@ library may also be used with any Atom Publishing Protocol service (AtomPub).
       'gdata.webmastertools', 
       'gdata.youtube', 
       ],
-    package_dir = {'gdata':'src/gdata', 'atom':'src/atom'},
+    package_dir = {'gdata':'gdata', 'atom':'atom'},
     install_requires=required
 )
