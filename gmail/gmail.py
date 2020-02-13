@@ -10,7 +10,7 @@ from config import config
 
 class Gmail:
     def __init__(self):
-        print "Initialising Gmail Service"
+        print("Initialising Gmail Service")
 
     def getService(self):
         creds = None
