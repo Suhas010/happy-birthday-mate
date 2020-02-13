@@ -1,2 +1,10 @@
 *.json
 *.pickle
+*.pyc
+*.dat
+config/*
+cliet_secret.json
+credentials.json
+gdata-2.0.18.egg-info
+sample.py
+log/*
