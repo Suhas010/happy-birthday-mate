@@ -3,9 +3,8 @@
 *.pyc
 *.dat
 config/*
-atom/
-gdata/
 cliet_secret.json
 credentials.json
 gdata-2.0.18.egg-info
 sample.py
+log/*
